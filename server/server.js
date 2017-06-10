@@ -9,19 +9,11 @@ var {mongoose} = require('./db/mongoose');
 var {User} = require('./models/user');
 var {authenticate} = require('./middleware/authenticate');
 var {Councilman} = require('./models/councilman');
+var {allowCrossDomain} = require('./middleware/allowCrossDomain');
 
 var app = express();
 const port = process.env.PORT;
 app.use(bodyParser.json());
-
-// cors
-var allowCrossDomain = function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,PATCH,DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-
-    next();
-}
 app.use(allowCrossDomain);
 
 app.post('/councilmen', (req, res) => {
@@ -39,7 +31,7 @@ app.post('/councilmen', (req, res) => {
 });
 
 app.get('/councilmen', (req, res) => {
-  Councilman.find().then((councilmen) => {
+  Councilman.find().sort({name: 'asc'}).then((councilmen) => {
     res.send({councilmen});
   }, (e) => {
     res.status(400).send(e);
